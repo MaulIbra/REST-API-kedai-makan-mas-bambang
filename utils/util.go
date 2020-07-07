@@ -4,6 +4,11 @@ import (
 	"encoding/json"
 	"github.com/gorilla/mux"
 	"net/http"
+	"time"
+)
+
+const (
+	FORMART_DATE = `2006-01-02 15:04:05`
 )
 
 func DecodePathVariabel(val string, r *http.Request) string {
@@ -24,3 +29,8 @@ func JsonDecoder(val interface{}, r *http.Request) error {
 	}
 	return nil
 }
+
+func GetTimeNow() string{
+	return time.Now().Format(FORMART_DATE)
+}
+

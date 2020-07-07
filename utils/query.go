@@ -24,4 +24,30 @@ const(
 	INSERT_MENU = `INSERT INTO m_menu values(?,?,?,?,?,?)`
 	UPDATE_MENU = `UPDATE m_menu SET category_id=?,menu_name=?,stok=?,price=?,menu_active=? where menu_id=?;`
 	DELETE_MENU = `UPDATE m_menu set menu_active=? where menu_id=?`
+
+	INSERT_TRANSACTION = `INSERT INTO m_transaction values(?,?,?,?)`
+	SELECT_TRANSACTION_BY_ID = `SELECT 
+	t.transaction_date,
+	t.transaction_id,
+    t.menu_id,
+    m.menu_name,
+    t.quantity,
+    m.price,
+    sum(t.quantity * m.price) as total_price
+	FROM m_transaction t inner join m_menu m on t.menu_id = m.menu_id 
+    where t.transaction_id = ?
+	group by t.transaction_id,t.menu_id`
+	SELECT_TRANSACTION = `SELECT 
+	t.transaction_date,
+	t.transaction_id,
+    t.menu_id,
+    m.menu_name,
+    t.quantity,
+    m.price,
+    sum(t.quantity * m.price) as total_price
+	FROM m_transaction t inner join m_menu m on t.menu_id = m.menu_id 
+    where t.transaction_date like ?
+	group by t.transaction_id,t.menu_id
+	order by t.transaction_id
+	`
 )
