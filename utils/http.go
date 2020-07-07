@@ -40,6 +40,14 @@ func HandleRequest(res http.ResponseWriter, statusCode int) {
 	res.Write(byteOfResponseInsertion)
 }
 
+func HandleResponseError(res http.ResponseWriter, statusCode int,message string) {
+	res.Header().Set("Content-Type", "application/json")
+	res.WriteHeader(statusCode)
+	response := responses.ResponsesStatus{statusCode, message}
+	byteOfResponseInsertion, _ := json.Marshal(response)
+	res.Write(byteOfResponseInsertion)
+}
+
 func HandleResponse(res http.ResponseWriter, statusCode int, data interface{}) {
 	res.Header().Set("Content-Type", "application/json")
 	res.WriteHeader(statusCode)

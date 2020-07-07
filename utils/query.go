@@ -50,4 +50,6 @@ const(
 	group by t.transaction_id,t.menu_id
 	order by t.transaction_id
 	`
+	SELECT_STOCK_MENU = `Select stok,menu_name from m_menu where menu_id=? and menu_active=1`
+	UPDATE_STOCK_MENU = `UPDATE m_menu set stok=? where menu_id = ?`
 )

@@ -1,6 +1,7 @@
 package transaction
 
 import (
+	"fmt"
 	"github.com/maulIbra/clean-architecture-go/utils"
 )
 
@@ -54,18 +55,33 @@ func (t TransactionUsecase) GetTransaction(counter string) ([]*TransactionRespon
 
 
 
-func (t TransactionUsecase) PostTransaction(transaction *Transaction) error {
+func (t TransactionUsecase) PostTransaction(transaction *Transaction) (*string,error) {
 	transaction.TransactionDate = utils.GetTimeNow()
-	err := t.repo.PostTransaction(transaction)
-	if err != nil {
-		return err
+	updateStock := make(map[string]int)
+	for _,val := range transaction.ListMenu{
+		menu,err := t.repo.CheckMenuStock(val.MenuId)
+		if err != nil {
+			return nil,err
+		}
+		if menu.Stock < val.Quantity{
+			message := fmt.Sprintf("%v Sementara Kosong",menu.MenuName)
+			return &message,nil
+		}
+		updateStock[val.MenuId]= menu.Stock-val.Quantity
 	}
-	return nil
+	if len(updateStock) > 0 {
+		err := t.repo.PostTransaction(transaction,updateStock)
+		if err != nil {
+			return nil,err
+		}
+	}
+
+	return nil,nil
 }
 
 func (t TransactionUsecase) GetTransactionByID(id string) (*TransactionResponse, error) {
 	transactionTemp , err := t.repo.GetTransactionByID(id)
-	if err != nil {
+	if err != nil || len(transactionTemp)==0 {
 		return nil, err
 	}
 	listMenu,totalPrice,_ := BundleListMenuTransaction(transactionTemp)

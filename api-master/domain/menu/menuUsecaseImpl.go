@@ -1,6 +1,8 @@
 package menu
 
-import "errors"
+import (
+	"errors"
+)
 
 type menuUsecase struct {
 	menuRepo IMenuRepo

@@ -37,8 +37,9 @@ func (ph *menuController) readMenu(res http.ResponseWriter, req *http.Request) {
 func (ph *menuController) readMenuById(res http.ResponseWriter, req *http.Request) {
 	id := utils.DecodePathVariabel("id", req)
 	menu, err := ph.usecase.GetMenuByID(id)
+	var x []string
 	if err != nil {
-		utils.HandleResponse(res, http.StatusBadRequest, utils.BAD_REQUEST)
+		utils.HandleResponse(res, http.StatusOK,x )
 	} else {
 		utils.HandleResponse(res, http.StatusOK, menu)
 	}

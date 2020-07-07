@@ -47,7 +47,7 @@ func (m *menuRepo) GetMenuByID(id string) (*Menu, error) {
 	defer stmt.Close()
 	err = stmt.QueryRow(id).Scan(&menu.MenuiD,&menu.MenuName,&menu.Stock,&menu.Price,&menu.MenuActive,&menu.Category.CategoryID,&menu.Category.CategoryName)
 	if err != nil {
-		return nil, err
+		return &menu, err
 	}
 	return &menu, nil
 }

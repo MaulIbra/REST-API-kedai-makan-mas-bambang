@@ -3,6 +3,7 @@ package transaction
 import (
 	"database/sql"
 	guuid "github.com/google/uuid"
+	"github.com/maulIbra/clean-architecture-go/api-master/domain/menu"
 	"github.com/maulIbra/clean-architecture-go/utils"
 	"log"
 )
@@ -10,6 +11,7 @@ import (
 type TransactionRepo struct {
 	db *sql.DB
 }
+
 
 func NewTransactionRepo(db *sql.DB) ITransactionRepo{
 	return &TransactionRepo{
@@ -66,7 +68,7 @@ func (t TransactionRepo) GetTransactionByID(id string) ([]TransactionResponseTem
 	return transactionTemp,nil
 }
 
-func (t TransactionRepo) PostTransaction(transaction *Transaction) error {
+func (t TransactionRepo) PostTransaction(transaction *Transaction,updateStock map[string]int) error {
 	id := guuid.New()
 	transaction.TransactionId = id.String()
 	tx, err := t.db.Begin()
@@ -87,6 +89,35 @@ func (t TransactionRepo) PostTransaction(transaction *Transaction) error {
 			return err
 		}
 	}
+
+	stmt,err = tx.Prepare(utils.UPDATE_STOCK_MENU)
+	defer stmt.Close()
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	for val2 := range updateStock{
+		_,err = stmt.Exec(updateStock[val2],val2)
+		if err != nil {
+			tx.Rollback()
+			return err
+		}
+	}
 	return tx.Commit()
 }
 
+
+func (t TransactionRepo) CheckMenuStock(id string) (*menu.Menu, error) {
+	var menu menu.Menu
+	stmt, err := t.db.Prepare(utils.SELECT_STOCK_MENU)
+	if err != nil {
+		return nil, err
+	}
+	defer stmt.Close()
+	err = stmt.QueryRow(id).Scan(&menu.Stock,&menu.MenuName)
+	if err != nil {
+		return nil, err
+	}
+	return &menu, nil
+}
