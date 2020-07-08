@@ -1,7 +1,9 @@
 package transaction
 
+import "github.com/maulIbra/clean-architecture-go/api-master/models"
+
 type ITransactionUsecase interface {
-	PostTransaction(transaction *Transaction) (*string,error)
-	GetTransactionByID(id string) (*TransactionResponse, error)
-	GetTransaction(counter string) ([]*TransactionResponse, error)
+	PostTransaction(transaction *models.Transaction) (*string,error)
+	GetTransactionByID(id string) (*models.TransactionResponse, error)
+	GetTransaction(counter string) ([]*models.TransactionResponse, error)
 }

@@ -1,9 +1,9 @@
-package transaction
+package models
 
 type Transaction struct {
-	TransactionId string `json:transactionId`
-	ListMenu [] TransactionMenuRequest`json:"listMenu"`
-	TransactionDate string `json:"transactionDate"`
+	TransactionId string              `json:transactionId`
+	ListMenu []TransactionMenuRequest `json:"listMenu"`
+	TransactionDate string            `json:"transactionDate"`
 }
 
 type TransactionMenuRequest struct {
@@ -12,20 +12,20 @@ type TransactionMenuRequest struct {
 }
 
 type TransactionResponseTemp struct {
-	TransactionId string
-	Menu TransactionMenuResponse
+	TransactionId   string
+	Menu            TransactionMenuResponse
 	TransactionDate string
 }
 
 type TransactionResponse struct {
-	TransactionId string `json:transactionId`
+	TransactionId string                `json:transactionId`
 	Listmenu []*TransactionMenuResponse `json:"listmenu"`
-	TransactionDate string `json:"transactionDate"`
-	TransactionTotalPrice int `json:"transactionTotalPrice"`
+	TransactionDate string              `json:"transactionDate"`
+	TransactionTotalPrice int           `json:"transactionTotalPrice"`
 }
 
 type TransactionOmset struct {
-	TotalOmset int `json:"totalOmset"`
+	TotalOmset int                         `json:"totalOmset"`
 	ListTransaction []*TransactionResponse `json:"listTransaction"`
 }
 

@@ -1,4 +1,4 @@
-package authentication
+package models
 
 type Token struct {
 	Key string

@@ -3,6 +3,7 @@ package menu
 import (
 	"github.com/gorilla/mux"
 	"github.com/maulIbra/clean-architecture-go/api-master/middleware"
+	"github.com/maulIbra/clean-architecture-go/api-master/models"
 	"github.com/maulIbra/clean-architecture-go/utils"
 	"log"
 	"net/http"
@@ -49,7 +50,7 @@ func (ph *menuController) readMenuById(res http.ResponseWriter, req *http.Reques
 }
 
 func (ph *menuController) addMenu(res http.ResponseWriter, req *http.Request) {
-	var menu Menu
+	var menu models.Menu
 	err := utils.JsonDecoder(&menu, req)
 	log.Print(menu)
 	if err != nil {
@@ -70,7 +71,7 @@ func (ph *menuController) addMenu(res http.ResponseWriter, req *http.Request) {
 }
 
 func (ph *menuController) editMenu(res http.ResponseWriter, req *http.Request) {
-	var menu Menu
+	var menu models.Menu
 
 	id := utils.DecodePathVariabel("id", req)
 	err := utils.JsonDecoder(&menu, req)

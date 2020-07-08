@@ -3,7 +3,7 @@ package transaction
 import (
 	"database/sql"
 	guuid "github.com/google/uuid"
-	"github.com/maulIbra/clean-architecture-go/api-master/domain/menu"
+	"github.com/maulIbra/clean-architecture-go/api-master/models"
 	"github.com/maulIbra/clean-architecture-go/utils"
 	"log"
 )
@@ -19,8 +19,8 @@ func NewTransactionRepo(db *sql.DB) ITransactionRepo{
 	}
 }
 
-func (t TransactionRepo) GetTransaction(counter string) ([]*TransactionResponseTemp, error) {
-	transactionTemp := []*TransactionResponseTemp{}
+func (t TransactionRepo) GetTransaction(counter string) ([]*models.TransactionResponseTemp, error) {
+	transactionTemp := []*models.TransactionResponseTemp{}
 
 	stmt, err := t.db.Prepare(utils.SELECT_TRANSACTION)
 	if err != nil {
@@ -33,7 +33,7 @@ func (t TransactionRepo) GetTransaction(counter string) ([]*TransactionResponseT
 	}
 
 	for rows.Next() {
-		p := TransactionResponseTemp{}
+		p := models.TransactionResponseTemp{}
 		err := rows.Scan(&p.TransactionDate, &p.TransactionId, &p.Menu.MenuId, &p.Menu.MenuName, &p.Menu.Quantity, &p.Menu.MenuPrice, &p.Menu.TotalPrice)
 		if err != nil {
 			return nil, err
@@ -44,8 +44,8 @@ func (t TransactionRepo) GetTransaction(counter string) ([]*TransactionResponseT
 	return transactionTemp,nil
 }
 
-func (t TransactionRepo) GetTransactionByID(id string) ([]TransactionResponseTemp, error) {
-	transactionTemp := []TransactionResponseTemp{}
+func (t TransactionRepo) GetTransactionByID(id string) ([]models.TransactionResponseTemp, error) {
+	transactionTemp := []models.TransactionResponseTemp{}
 
 	stmt, err := t.db.Prepare(utils.SELECT_TRANSACTION_BY_ID)
 	if err != nil {
@@ -58,7 +58,7 @@ func (t TransactionRepo) GetTransactionByID(id string) ([]TransactionResponseTem
 	}
 
 	for rows.Next() {
-		p := TransactionResponseTemp{}
+		p := models.TransactionResponseTemp{}
 		err := rows.Scan(&p.TransactionDate,&p.TransactionId,&p.Menu.MenuId,&p.Menu.MenuName,&p.Menu.Quantity,&p.Menu.MenuPrice,&p.Menu.TotalPrice)
 		if err != nil {
 			return nil, err
@@ -68,7 +68,7 @@ func (t TransactionRepo) GetTransactionByID(id string) ([]TransactionResponseTem
 	return transactionTemp,nil
 }
 
-func (t TransactionRepo) PostTransaction(transaction *Transaction,updateStock map[string]int) error {
+func (t TransactionRepo) PostTransaction(transaction *models.Transaction,updateStock map[string]int) error {
 	id := guuid.New()
 	transaction.TransactionId = id.String()
 	tx, err := t.db.Begin()
@@ -108,8 +108,8 @@ func (t TransactionRepo) PostTransaction(transaction *Transaction,updateStock ma
 }
 
 
-func (t TransactionRepo) CheckMenuStock(id string) (*menu.Menu, error) {
-	var menu menu.Menu
+func (t TransactionRepo) CheckMenuStock(id string) (*models.Menu, error) {
+	var menu models.Menu
 	stmt, err := t.db.Prepare(utils.SELECT_STOCK_MENU)
 	if err != nil {
 		return nil, err

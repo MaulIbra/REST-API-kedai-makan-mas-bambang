@@ -3,6 +3,7 @@ package transaction
 import (
 	"github.com/gorilla/mux"
 	"github.com/maulIbra/clean-architecture-go/api-master/middleware"
+	"github.com/maulIbra/clean-architecture-go/api-master/models"
 	"github.com/maulIbra/clean-architecture-go/utils"
 	"log"
 	"net/http"
@@ -41,7 +42,7 @@ func (th *transactionController) readTransactionDaily(w http.ResponseWriter, r *
 	for _,val := range transactionList{
 		totalOmset += val.TransactionTotalPrice
 	}
-	transactionOmset := TransactionOmset{
+	transactionOmset := models.TransactionOmset{
 		TotalOmset: totalOmset,
 		ListTransaction: transactionList,
 	}
@@ -53,7 +54,7 @@ func (th *transactionController) readTransactionDaily(w http.ResponseWriter, r *
 }
 
 func (th *transactionController) addTransaction(w http.ResponseWriter, r *http.Request){
-	var transaction Transaction
+	var transaction models.Transaction
 	err := utils.JsonDecoder(&transaction,r)
 	if err != nil {
 		utils.HandleRequest(w, http.StatusBadRequest)
