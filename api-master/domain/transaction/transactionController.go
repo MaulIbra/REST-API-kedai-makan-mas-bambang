@@ -2,6 +2,7 @@ package transaction
 
 import (
 	"github.com/gorilla/mux"
+	"github.com/maulIbra/clean-architecture-go/api-master/middleware"
 	"github.com/maulIbra/clean-architecture-go/utils"
 	"log"
 	"net/http"
@@ -16,16 +17,18 @@ func NewTransactionController(usecase ITransactionUsecase) *transactionControlle
 }
 
 func (th *transactionController) Transaction(r *mux.Router) {
-	r.HandleFunc("/transaction", th.readTransaction).Methods(http.MethodGet)
-	r.HandleFunc("/transaction/daily", th.readTransactionDaily).Methods(http.MethodGet)
-	r.HandleFunc("/transaction", th.addTransaction).Methods(http.MethodPost)
+	transaction := r.PathPrefix("/transaction").Subrouter()
+	transaction.Use(middleware.TokenValidationMiddleware)
+	transaction.HandleFunc("", th.readTransaction).Methods(http.MethodGet)
+	transaction.HandleFunc("/daily", th.readTransactionDaily).Methods(http.MethodGet)
+	transaction.HandleFunc("", th.addTransaction).Methods(http.MethodPost)
 }
 
 func (th *transactionController) readTransaction(w http.ResponseWriter, r *http.Request){
 	transactionList, err := th.usecase.GetTransaction("%")
 	if err != nil {
 		log.Print(err)
-		utils.HandleRequest(w, http.StatusBadGateway)
+		utils.HandleResponseError(w, http.StatusBadGateway,utils.BAD_GATEWAY)
 	}else {
 		utils.HandleResponse(w, http.StatusOK, transactionList)
 	}
@@ -43,7 +46,7 @@ func (th *transactionController) readTransactionDaily(w http.ResponseWriter, r *
 		ListTransaction: transactionList,
 	}
 	if err != nil {
-		utils.HandleRequest(w, http.StatusBadGateway)
+		utils.HandleResponseError(w, http.StatusBadGateway,utils.BAD_GATEWAY)
 	}else{
 		utils.HandleResponse(w, http.StatusOK, transactionOmset)
 	}

@@ -2,6 +2,7 @@ package menu
 
 import (
 	"github.com/gorilla/mux"
+	"github.com/maulIbra/clean-architecture-go/api-master/middleware"
 	"github.com/maulIbra/clean-architecture-go/utils"
 	"log"
 	"net/http"
@@ -16,11 +17,13 @@ func NewMenuController(usecase IMenuUsecase) *menuController {
 }
 
 func (ph *menuController) Menu(r *mux.Router) {
-	r.HandleFunc("/menu", ph.readMenu).Methods(http.MethodGet)
-	r.HandleFunc("/menu/{id}", ph.readMenuById).Methods(http.MethodGet)
-	r.HandleFunc("/menu", ph.addMenu).Methods(http.MethodPost)
-	r.HandleFunc("/menu/{id}", ph.editMenu).Methods(http.MethodPut)
-	r.HandleFunc("/menu/{id}", ph.deleteMenu).Methods(http.MethodDelete)
+	menu := r.PathPrefix("/menu").Subrouter()
+	menu.Use(middleware.TokenValidationMiddleware)
+	menu.HandleFunc("", ph.readMenu).Methods(http.MethodGet)
+	menu.HandleFunc("/{id}", ph.readMenuById).Methods(http.MethodGet)
+	menu.HandleFunc("", ph.addMenu).Methods(http.MethodPost)
+	menu.HandleFunc("/{id}", ph.editMenu).Methods(http.MethodPut)
+	menu.HandleFunc("/{id}", ph.deleteMenu).Methods(http.MethodDelete)
 
 }
 
