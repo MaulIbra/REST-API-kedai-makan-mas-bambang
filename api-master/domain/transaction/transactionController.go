@@ -61,7 +61,6 @@ func (th *transactionController) addTransaction(w http.ResponseWriter, r *http.R
 	}
 	message,err := th.usecase.PostTransaction(&transaction)
 	if err != nil {
-		log.Print(err)
 		utils.HandleResponseError(w, http.StatusBadGateway,utils.BAD_GATEWAY)
 	}else if message != nil {
 		utils.HandleResponseError(w,http.StatusOK,*message)

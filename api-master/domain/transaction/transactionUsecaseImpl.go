@@ -97,17 +97,24 @@ func (t TransactionUsecase) GetTransactionByID(id string) (*models.TransactionRe
 
 func BundleListMenuTransaction(transactionTemp []models.TransactionResponseTemp) ([]*models.TransactionMenuResponse, int,string) {
 	transactionMenu := []*models.TransactionMenuResponse{}
+	listAdditional := []models.AdditionalMenu{}
 	var transactionTotalPrice int
 	var transactionDate string
 	for _,val := range transactionTemp {
+		additionalPrice := 0
+		for _,val2 := range val.Menu.Additional{
+			listAdditional = append(listAdditional,models.AdditionalMenu{val2.AdditionalID,val2.AdditionalName,val2.AdditionalPrice})
+			additionalPrice += val2.AdditionalPrice
+		}
 		transactionMenu = append(transactionMenu,&models.TransactionMenuResponse{
 			MenuId: val.Menu.MenuId,
 			MenuName: val.Menu.MenuName,
 			Quantity: val.Menu.Quantity,
 			MenuPrice: val.Menu.MenuPrice,
 			TotalPrice: val.Menu.TotalPrice,
+			Additional: listAdditional,
 		})
-		transactionTotalPrice = transactionTotalPrice + val.Menu.TotalPrice
+		transactionTotalPrice = transactionTotalPrice + val.Menu.TotalPrice+ additionalPrice
 		transactionDate = val.TransactionDate
 	}
 	return transactionMenu,transactionTotalPrice,transactionDate

@@ -9,12 +9,7 @@ type Transaction struct {
 type TransactionMenuRequest struct {
 	MenuId string `json:"menuId"`
 	Quantity int `json:"quantity"`
-}
-
-type TransactionResponseTemp struct {
-	TransactionId   string
-	Menu            TransactionMenuResponse
-	TransactionDate string
+	Additional []AdditionalMenu `json:"additional"`
 }
 
 type TransactionResponse struct {
@@ -22,6 +17,12 @@ type TransactionResponse struct {
 	Listmenu []*TransactionMenuResponse `json:"listmenu"`
 	TransactionDate string              `json:"transactionDate"`
 	TransactionTotalPrice int           `json:"transactionTotalPrice"`
+}
+
+type TransactionResponseTemp struct {
+	TransactionId   string
+	Menu            TransactionMenuResponse
+	TransactionDate string
 }
 
 type TransactionOmset struct {
@@ -35,5 +36,6 @@ type TransactionMenuResponse struct {
 	Quantity int `json:"quantity"`
 	MenuPrice int `json:"menuPrice"`
 	TotalPrice int `json:"totalPrice"`
+	Additional []AdditionalMenu `json:"additional"`
 }
 

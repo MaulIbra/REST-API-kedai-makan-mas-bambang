@@ -52,4 +52,6 @@ const(
 	`
 	SELECT_STOCK_MENU = `Select stok,menu_name from m_menu where menu_id=? and menu_active=1`
 	UPDATE_STOCK_MENU = `UPDATE m_menu set stok=? where menu_id = ?`
+	INSERT_ADDITIONAL_SERVICE_IN_TRANSACTION = `INSERT INTO m_transaction_has_m_additional values(?,?)`
+	SELECT_ADDITIONAL_SERVICE_IN_TRANSACTION = `SELECT a.additional_id,a.additional_name,a.additional_price FROM m_transaction_has_m_additional tm join m_additional a on tm.additional_id=a.additional_id and tm.transaction_id=?`
 )

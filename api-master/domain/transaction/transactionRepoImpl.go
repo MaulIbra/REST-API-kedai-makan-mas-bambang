@@ -34,13 +34,31 @@ func (t TransactionRepo) GetTransaction(counter string) ([]*models.TransactionRe
 
 	for rows.Next() {
 		p := models.TransactionResponseTemp{}
-		err := rows.Scan(&p.TransactionDate, &p.TransactionId, &p.Menu.MenuId, &p.Menu.MenuName, &p.Menu.Quantity, &p.Menu.MenuPrice, &p.Menu.TotalPrice)
+		additionalTemp := []models.AdditionalMenu{}
+		err := rows.Scan(&p.TransactionDate,&p.TransactionId,&p.Menu.MenuId,&p.Menu.MenuName,&p.Menu.Quantity,&p.Menu.MenuPrice,&p.Menu.TotalPrice)
 		if err != nil {
 			return nil, err
 		}
+		stmt, err := t.db.Prepare(utils.SELECT_ADDITIONAL_SERVICE_IN_TRANSACTION)
+		if err != nil {
+			return nil, err
+		}
+		defer stmt.Close()
+		rows, err := stmt.Query(p.TransactionId)
+		if err != nil{
+			return nil, err
+		}
+		for rows.Next(){
+			a := models.AdditionalMenu{}
+			err := rows.Scan(&a.AdditionalID,&a.AdditionalName,&a.AdditionalPrice)
+			if err != nil {
+				return nil, err
+			}
+			additionalTemp = append(additionalTemp,a)
+		}
+		p.Menu.Additional = additionalTemp
 		transactionTemp = append(transactionTemp, &p)
 	}
-
 	return transactionTemp,nil
 }
 
@@ -59,10 +77,29 @@ func (t TransactionRepo) GetTransactionByID(id string) ([]models.TransactionResp
 
 	for rows.Next() {
 		p := models.TransactionResponseTemp{}
+		additionalTemp := []models.AdditionalMenu{}
 		err := rows.Scan(&p.TransactionDate,&p.TransactionId,&p.Menu.MenuId,&p.Menu.MenuName,&p.Menu.Quantity,&p.Menu.MenuPrice,&p.Menu.TotalPrice)
 		if err != nil {
 			return nil, err
 		}
+		stmt, err := t.db.Prepare(utils.SELECT_ADDITIONAL_SERVICE_IN_TRANSACTION)
+		if err != nil {
+			return nil, err
+		}
+		defer stmt.Close()
+		rows, err := stmt.Query(p.TransactionId)
+		if err != nil{
+			return nil, err
+		}
+		for rows.Next(){
+			a := models.AdditionalMenu{}
+			err := rows.Scan(&a.AdditionalID,&a.AdditionalName,&a.AdditionalPrice)
+			if err != nil {
+				return nil, err
+			}
+			additionalTemp = append(additionalTemp,a)
+		}
+		p.Menu.Additional = additionalTemp
 		transactionTemp = append(transactionTemp, p)
 	}
 	return transactionTemp,nil
@@ -87,6 +124,23 @@ func (t TransactionRepo) PostTransaction(transaction *models.Transaction,updateS
 		if err != nil {
 			tx.Rollback()
 			return err
+		}
+	}
+
+	stmt, err = tx.Prepare(utils.INSERT_ADDITIONAL_SERVICE_IN_TRANSACTION)
+	defer stmt.Close()
+	if err != nil {
+		log.Print(err)
+		tx.Rollback()
+		return err
+	}
+	for _,val := range transaction.ListMenu{
+		for _,val2 := range val.Additional{
+			_, err = stmt.Exec(id,val2.AdditionalID)
+			if err != nil {
+				tx.Rollback()
+				return err
+			}
 		}
 	}
 
