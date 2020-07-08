@@ -2,9 +2,10 @@ package menu
 
 import (
 	"database/sql"
+	guuid "github.com/google/uuid"
+	"github.com/maulIbra/clean-architecture-go/api-master/models"
 	"github.com/maulIbra/clean-architecture-go/utils"
 	"log"
-	guuid "github.com/google/uuid"
 )
 
 type menuRepo struct{
@@ -14,8 +15,8 @@ type menuRepo struct{
 func NewMenuRepo(db *sql.DB) IMenuRepo{
 	return &menuRepo{db: db}
 }
-func (m *menuRepo) GetMenu() ([]*Menu, error) {
-	menuList := []*Menu{}
+func (m *menuRepo) GetMenu() ([]*models.Menu, error) {
+	menuList := []*models.Menu{}
 	stmt, err := m.db.Prepare(utils.SELECT_MENU)
 	if err != nil {
 		return nil, err
@@ -27,7 +28,7 @@ func (m *menuRepo) GetMenu() ([]*Menu, error) {
 	}
 
 	for rows.Next() {
-		menu := Menu{}
+		menu := models.Menu{}
 		err := rows.Scan(&menu.MenuiD,&menu.MenuName,&menu.Stock,&menu.Price,&menu.MenuActive,&menu.Category.CategoryID,&menu.Category.CategoryName)
 		if err != nil {
 			log.Print(err)
@@ -38,8 +39,8 @@ func (m *menuRepo) GetMenu() ([]*Menu, error) {
 	return menuList, nil
 }
 
-func (m *menuRepo) GetMenuByID(id string) (*Menu, error) {
-	menu := Menu{}
+func (m *menuRepo) GetMenuByID(id string) (*models.Menu, error) {
+	menu := models.Menu{}
 	stmt, err := m.db.Prepare(utils.SELECT_MENU_BY_ID)
 	if err != nil {
 		return nil, err
@@ -47,12 +48,12 @@ func (m *menuRepo) GetMenuByID(id string) (*Menu, error) {
 	defer stmt.Close()
 	err = stmt.QueryRow(id).Scan(&menu.MenuiD,&menu.MenuName,&menu.Stock,&menu.Price,&menu.MenuActive,&menu.Category.CategoryID,&menu.Category.CategoryName)
 	if err != nil {
-		return nil, err
+		return &menu, err
 	}
 	return &menu, nil
 }
 
-func (m *menuRepo) PostMenu(menu *Menu) error {
+func (m *menuRepo) PostMenu(menu *models.Menu) error {
 	id := guuid.New()
 	menu.MenuiD = id.String()
 	tx, err := m.db.Begin()
@@ -74,7 +75,7 @@ func (m *menuRepo) PostMenu(menu *Menu) error {
 	return tx.Commit()
 }
 
-func (m *menuRepo) UpdateMenu(menu *Menu) error {
+func (m *menuRepo) UpdateMenu(menu *models.Menu) error {
 	tx, err := m.db.Begin()
 	if err != nil {
 		return err

@@ -1,6 +1,9 @@
 package menu
 
-import "errors"
+import (
+	"errors"
+	"github.com/maulIbra/clean-architecture-go/api-master/models"
+)
 
 type menuUsecase struct {
 	menuRepo IMenuRepo
@@ -13,7 +16,7 @@ func NewMenuUsecase(repo IMenuRepo) IMenuUsecase{
 }
 
 
-func (m menuUsecase) GetMenu() ([]*Menu, error) {
+func (m menuUsecase) GetMenu() ([]*models.Menu, error) {
 	listMenu,err := m.menuRepo.GetMenu()
 	if err != nil {
 		return nil, err
@@ -21,7 +24,7 @@ func (m menuUsecase) GetMenu() ([]*Menu, error) {
 	return listMenu,nil
 }
 
-func (m menuUsecase) GetMenuByID(id string) (*Menu, error) {
+func (m menuUsecase) GetMenuByID(id string) (*models.Menu, error) {
 	if len(id) <= 0 {
 		return nil, errors.New("no params")
 	}
@@ -32,7 +35,7 @@ func (m menuUsecase) GetMenuByID(id string) (*Menu, error) {
 	return menu,nil
 }
 
-func (m menuUsecase) PostMenu(menu *Menu) error {
+func (m menuUsecase) PostMenu(menu *models.Menu) error {
 	err := m.menuRepo.PostMenu(menu)
 	if err != nil {
 		return err
@@ -40,7 +43,7 @@ func (m menuUsecase) PostMenu(menu *Menu) error {
 	return nil
 }
 
-func (m menuUsecase) UpdateMenu(menu *Menu) error {
+func (m menuUsecase) UpdateMenu(menu *models.Menu) error {
 	err := m.menuRepo.UpdateMenu(menu)
 	if err != nil {
 		return err

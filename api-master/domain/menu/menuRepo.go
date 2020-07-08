@@ -1,9 +1,11 @@
 package menu
 
+import "github.com/maulIbra/clean-architecture-go/api-master/models"
+
 type IMenuRepo interface {
-	GetMenu() ([]*Menu, error)
-	GetMenuByID(id string) (*Menu, error)
-	PostMenu(menu *Menu) error
-	UpdateMenu(menu *Menu) error
+	GetMenu() ([]*models.Menu, error)
+	GetMenuByID(id string) (*models.Menu, error)
+	PostMenu(menu *models.Menu) error
+	UpdateMenu(menu *models.Menu) error
 	DeleteMenu(id string) error
 }

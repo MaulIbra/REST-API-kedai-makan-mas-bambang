@@ -2,6 +2,8 @@ package menu
 
 import (
 	"github.com/gorilla/mux"
+	"github.com/maulIbra/clean-architecture-go/api-master/middleware"
+	"github.com/maulIbra/clean-architecture-go/api-master/models"
 	"github.com/maulIbra/clean-architecture-go/utils"
 	"log"
 	"net/http"
@@ -16,11 +18,13 @@ func NewMenuController(usecase IMenuUsecase) *menuController {
 }
 
 func (ph *menuController) Menu(r *mux.Router) {
-	r.HandleFunc("/menu", ph.readMenu).Methods(http.MethodGet)
-	r.HandleFunc("/menu/{id}", ph.readMenuById).Methods(http.MethodGet)
-	r.HandleFunc("/menu", ph.addMenu).Methods(http.MethodPost)
-	r.HandleFunc("/menu/{id}", ph.editMenu).Methods(http.MethodPut)
-	r.HandleFunc("/menu/{id}", ph.deleteMenu).Methods(http.MethodDelete)
+	menu := r.PathPrefix("/menu").Subrouter()
+	menu.Use(middleware.TokenValidationMiddleware)
+	menu.HandleFunc("", ph.readMenu).Methods(http.MethodGet)
+	menu.HandleFunc("/{id}", ph.readMenuById).Methods(http.MethodGet)
+	menu.HandleFunc("", ph.addMenu).Methods(http.MethodPost)
+	menu.HandleFunc("/{id}", ph.editMenu).Methods(http.MethodPut)
+	menu.HandleFunc("/{id}", ph.deleteMenu).Methods(http.MethodDelete)
 
 }
 
@@ -37,15 +41,16 @@ func (ph *menuController) readMenu(res http.ResponseWriter, req *http.Request) {
 func (ph *menuController) readMenuById(res http.ResponseWriter, req *http.Request) {
 	id := utils.DecodePathVariabel("id", req)
 	menu, err := ph.usecase.GetMenuByID(id)
+	var x []string
 	if err != nil {
-		utils.HandleResponse(res, http.StatusBadRequest, utils.BAD_REQUEST)
+		utils.HandleResponse(res, http.StatusOK,x )
 	} else {
 		utils.HandleResponse(res, http.StatusOK, menu)
 	}
 }
 
 func (ph *menuController) addMenu(res http.ResponseWriter, req *http.Request) {
-	var menu Menu
+	var menu models.Menu
 	err := utils.JsonDecoder(&menu, req)
 	log.Print(menu)
 	if err != nil {
@@ -66,7 +71,7 @@ func (ph *menuController) addMenu(res http.ResponseWriter, req *http.Request) {
 }
 
 func (ph *menuController) editMenu(res http.ResponseWriter, req *http.Request) {
-	var menu Menu
+	var menu models.Menu
 
 	id := utils.DecodePathVariabel("id", req)
 	err := utils.JsonDecoder(&menu, req)
