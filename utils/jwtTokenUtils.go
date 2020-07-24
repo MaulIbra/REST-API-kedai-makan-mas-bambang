@@ -9,7 +9,7 @@ import (
 
 const (
 	hmacSampleSecret = "secret"
-	expiredPeriod    = 30
+	expiredPeriod    = 120
 	formatDateLayout = "2006-01-02 15:04:05"
 )
 

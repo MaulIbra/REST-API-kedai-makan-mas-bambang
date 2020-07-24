@@ -8,4 +8,5 @@ require (
 	github.com/google/uuid v1.1.1
 	github.com/gorilla/mux v1.7.4
 	github.com/spf13/viper v1.7.0
+	golang.org/x/crypto v0.0.0-20200709230013-948cd5f35899
 )

@@ -7,6 +7,7 @@ import (
 	"github.com/maulIbra/clean-architecture-go/utils"
 	"log"
 	"net/http"
+	"strconv"
 )
 
 type menuController struct {
@@ -20,7 +21,8 @@ func NewMenuController(usecase IMenuUsecase) *menuController {
 func (ph *menuController) Menu(r *mux.Router) {
 	menu := r.PathPrefix("/menu").Subrouter()
 	menu.Use(middleware.TokenValidationMiddleware)
-	menu.HandleFunc("", ph.readMenu).Methods(http.MethodGet)
+	menu.HandleFunc("/{offset}/{lengthRow}", ph.readMenu).Methods(http.MethodGet)
+	menu.HandleFunc("/count", ph.readMenuCount).Methods(http.MethodGet)
 	menu.HandleFunc("/{id}", ph.readMenuById).Methods(http.MethodGet)
 	menu.HandleFunc("", ph.addMenu).Methods(http.MethodPost)
 	menu.HandleFunc("/{id}", ph.editMenu).Methods(http.MethodPut)
@@ -29,12 +31,24 @@ func (ph *menuController) Menu(r *mux.Router) {
 }
 
 func (ph *menuController) readMenu(res http.ResponseWriter, req *http.Request) {
-	menuList, err := ph.usecase.GetMenu()
+	offset,_ := strconv.Atoi(utils.DecodePathVariabel("offset",req))
+	lengthRow,_ := strconv.Atoi(utils.DecodePathVariabel("lengthRow",req))
+	menuList, err := ph.usecase.GetMenu(offset,lengthRow)
 	if err != nil {
 		log.Print(err)
 		utils.HandleRequest(res, http.StatusBadGateway)
 	}else {
 		utils.HandleResponse(res, http.StatusOK, menuList)
+	}
+}
+
+func (ph *menuController) readMenuCount(res http.ResponseWriter, req *http.Request) {
+	countMenu, err := ph.usecase.GetCountMenu()
+	if err != nil {
+		log.Print(err)
+		utils.HandleRequest(res, http.StatusBadGateway)
+	}else {
+		utils.HandleResponse(res, http.StatusOK, countMenu)
 	}
 }
 
