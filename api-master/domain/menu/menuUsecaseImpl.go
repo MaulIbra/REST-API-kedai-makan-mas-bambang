@@ -16,12 +16,20 @@ func NewMenuUsecase(repo IMenuRepo) IMenuUsecase{
 }
 
 
-func (m menuUsecase) GetMenu() ([]*models.Menu, error) {
-	listMenu,err := m.menuRepo.GetMenu()
+func (m menuUsecase) GetMenu(offset,lengthRow int) ([]*models.Menu, error) {
+	listMenu,err := m.menuRepo.GetMenu(offset,lengthRow)
 	if err != nil {
 		return nil, err
 	}
 	return listMenu,nil
+}
+
+func (m menuUsecase) GetCountMenu() (*int, error) {
+	menuCount,err := m.menuRepo.GetCountMenu()
+	if err != nil {
+		return nil, err
+	}
+	return menuCount,nil
 }
 
 func (m menuUsecase) GetMenuByID(id string) (*models.Menu, error) {

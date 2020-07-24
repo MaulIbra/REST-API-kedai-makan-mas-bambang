@@ -21,6 +21,9 @@ func Init(router *mux.Router, db *sql.DB) {
 	transactionController := transaction.NewTransactionController(transactionUsecase)
 	transactionController.Transaction(router)
 
-	//token
-	authentication.Authenticate(router)
+	//authentication
+	AuthenticationRepo := authentication.NewAuthenticationRepo(db)
+	AuthenticationUsecase := authentication.NewAuthenticationUsecase(AuthenticationRepo)
+	AuthenticationController := authentication.NewAuthenticationController(AuthenticationUsecase)
+	AuthenticationController.Authenticate(router)
 }

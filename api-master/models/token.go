@@ -1,5 +1,5 @@
 package models
 
 type Token struct {
-	Key string
+	Key string `json:"token"`
 }

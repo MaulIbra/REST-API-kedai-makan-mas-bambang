@@ -8,12 +8,11 @@ import (
 
 func TokenValidationMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		tokenValue := r.URL.Query()["token"]
+		tokenValue := r.Header.Get("token")
 		if len(tokenValue) == 0 {
 			utils.HandleResponseError(w,http.StatusUnauthorized,"Unauthorized")
 		}else{
-			token := tokenValue[0]
-			_, err := utils.JwtDecoder(token)
+			_, err := utils.JwtDecoder(tokenValue)
 			if err != nil {
 				fmt.Println(err)
 				utils.HandleResponseError(w,http.StatusUnauthorized,"Expired Token")
