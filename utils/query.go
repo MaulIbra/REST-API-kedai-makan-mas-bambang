@@ -66,4 +66,5 @@ const(
     ON M_USER.USER_ID = M_PROFILE.USER_ID;`
 	DELETE_USER_PROFILE = `DELETE FROM m_profile where user_id = ?`
 	DELETE_USER         = `DELETE FROM m_user where user_id = ?`
+	SELECT_CATEGORY 	= `SELECT * FROM m_category`
 )

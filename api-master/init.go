@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"github.com/gorilla/mux"
 	"github.com/maulIbra/clean-architecture-go/api-master/domain/authentication"
+	"github.com/maulIbra/clean-architecture-go/api-master/domain/category"
 	"github.com/maulIbra/clean-architecture-go/api-master/domain/menu"
 	"github.com/maulIbra/clean-architecture-go/api-master/domain/transaction"
 )
@@ -14,6 +15,12 @@ func Init(router *mux.Router, db *sql.DB) {
 	menuUsecase := menu.NewMenuUsecase(menuRepo)
 	menuController := menu.NewMenuController(menuUsecase)
 	menuController.Menu(router)
+
+	//category
+	categoryRepo := category.NewCategoryRepoImpl(db)
+	categoryUsecase := category.NewCategoryUsecaseImpl(categoryRepo)
+	categoryController := category.NewCategoryController(categoryUsecase)
+	categoryController.Category(router)
 
 	//transaction
 	transactionRepo := transaction.NewTransactionRepo(db)
