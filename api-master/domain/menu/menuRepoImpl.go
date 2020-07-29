@@ -15,14 +15,14 @@ type menuRepo struct{
 func NewMenuRepo(db *sql.DB) IMenuRepo{
 	return &menuRepo{db: db}
 }
-func (m *menuRepo) GetMenu(offset,lengthRow int) ([]*models.Menu, error) {
+func (m *menuRepo) GetMenu(offset,lengthRow int,searchMenu string) ([]*models.Menu, error) {
 	menuList := []*models.Menu{}
 	stmt, err := m.db.Prepare(utils.SELECT_MENU)
 	if err != nil {
 		return nil, err
 	}
 	defer stmt.Close()
-	rows, err := stmt.Query(offset,lengthRow)
+	rows, err := stmt.Query(searchMenu,offset,lengthRow)
 	if err != nil {
 		return nil, err
 	}
@@ -39,14 +39,14 @@ func (m *menuRepo) GetMenu(offset,lengthRow int) ([]*models.Menu, error) {
 	return menuList, nil
 }
 
-func (m *menuRepo) GetCountMenu() (*int,error) {
+func (m *menuRepo) GetCountMenu(searchMenu string) (*int,error) {
 	var menuCount int
 	stmt, err := m.db.Prepare(utils.SELECT_MENU_COUNT)
 	if err != nil {
 		return nil,nil
 	}
 	defer stmt.Close()
-	err = stmt.QueryRow().Scan(&menuCount)
+	err = stmt.QueryRow(searchMenu).Scan(&menuCount)
 	if err != nil {
 		return nil,err
 	}

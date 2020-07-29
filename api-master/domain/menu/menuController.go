@@ -21,8 +21,8 @@ func NewMenuController(usecase IMenuUsecase) *menuController {
 func (ph *menuController) Menu(r *mux.Router) {
 	menu := r.PathPrefix("/menu").Subrouter()
 	menu.Use(middleware.TokenValidationMiddleware)
-	menu.HandleFunc("/{offset}/{lengthRow}", ph.readMenu).Methods(http.MethodGet)
-	menu.HandleFunc("/count", ph.readMenuCount).Methods(http.MethodGet)
+	menu.HandleFunc("/{offset}/{lengthRow}/{searchData}", ph.readMenu).Methods(http.MethodGet)
+	menu.HandleFunc("/count/{searchData}", ph.readMenuCount).Methods(http.MethodGet)
 	menu.HandleFunc("/{id}", ph.readMenuById).Methods(http.MethodGet)
 	menu.HandleFunc("", ph.addMenu).Methods(http.MethodPost)
 	menu.HandleFunc("/{id}", ph.editMenu).Methods(http.MethodPut)
@@ -33,7 +33,8 @@ func (ph *menuController) Menu(r *mux.Router) {
 func (ph *menuController) readMenu(res http.ResponseWriter, req *http.Request) {
 	offset,_ := strconv.Atoi(utils.DecodePathVariabel("offset",req))
 	lengthRow,_ := strconv.Atoi(utils.DecodePathVariabel("lengthRow",req))
-	menuList, err := ph.usecase.GetMenu(offset,lengthRow)
+	searchData := utils.DecodePathVariabel("searchData",req)
+	menuList, err := ph.usecase.GetMenu(offset,lengthRow,"%"+searchData+"%")
 	if err != nil {
 		log.Print(err)
 		utils.HandleRequest(res, http.StatusBadGateway)
@@ -43,7 +44,8 @@ func (ph *menuController) readMenu(res http.ResponseWriter, req *http.Request) {
 }
 
 func (ph *menuController) readMenuCount(res http.ResponseWriter, req *http.Request) {
-	countMenu, err := ph.usecase.GetCountMenu()
+	searchData := utils.DecodePathVariabel("searchData",req)
+	countMenu, err := ph.usecase.GetCountMenu("%"+searchData+"%")
 	if err != nil {
 		log.Print(err)
 		utils.HandleRequest(res, http.StatusBadGateway)

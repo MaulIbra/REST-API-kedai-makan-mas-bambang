@@ -10,7 +10,7 @@ const(
 	COALESCE(c.category_id, '') as category_id ,
     COALESCE(c.category_name, '') as category_name
 	FROM m_menu p left join m_category c on p.category_id = c.category_id
-	where p.menu_active = 1
+	where p.menu_active = 1 && p.menu_name like ?
 	LIMIT ?,?
 	`
 	SELECT_MENU_BY_ID = `SELECT 
@@ -23,7 +23,7 @@ const(
     COALESCE(c.category_name, '') as category_name
 	FROM m_menu p left join m_category c on p.category_id = c.category_id
 	WHERE p.menu_id = ?`
-	SELECT_MENU_COUNT = `SELECT COUNT(*) as count FROM m_menu where m_menu.menu_active = 1`
+	SELECT_MENU_COUNT = `SELECT COUNT(*) as count FROM m_menu where m_menu.menu_active = 1 && m_menu.menu_name like ?`
 	INSERT_MENU = `INSERT INTO m_menu values(?,?,?,?,?,?)`
 	UPDATE_MENU = `UPDATE m_menu SET category_id=?,menu_name=?,stok=?,price=?,menu_active=? where menu_id=?;`
 	DELETE_MENU = `UPDATE m_menu set menu_active=? where menu_id=?`
